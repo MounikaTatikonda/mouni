@@ -1,0 +1,11 @@
+.About{
+    text-align: center;
+    padding:20px;
+}
+.nav{
+    align-items: center;
+    display: flex;
+    background-color: aqua;
+    width: 1300px;
+    padding: 20px;
+}

@@ -1,59 +1,60 @@
-import React, { useState } from "react";
- import "./App.css";
-const App=()=> {
-  const [displayValue, setDisplayValue] = useState("");
-  const [result, setResult] = useState("");
-  const handleClick=(name)=>{
-    if (name === "=") {
-    
-      try {
-        const expression = displayValue.replace("÷", "/");
-        const calculatedResult = new Function(`return ${expression}`)();
-        setResult(calculatedResult);
-        setDisplayValue(calculatedResult);
-      } catch (error) {
-        setResult("Error");
-        setDisplayValue("");
+
+import React, { useState, useEffect } from "react";
+import "./App.css";
+import User from "./User.js";
+import Log from "./Log.js";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import About from "./About.js";
+import Dashboard from "./Dashboard";
+import Pic1 from "./Pic1";
+import Pic2 from "./Pic2";
+import "./Pic.css";
+import CartItem from "./CartItem";
+import Cart from "./Cart";
+import nav from "./About.css";
+import { Link } from "react-router-dom";
+import { auth } from "./Firebase";
+
+function App() {
+  const [cart, setCart] = useState([]);
+  const [userState, setUserState] = useState(null);
+
+  useEffect(() => {
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        setUserState({
+          uid: user?.uid,
+          email: user?.email,
+        });
+      } else {
+        setUserState(null);
       }
-    } else if (name === "C") {
-      setResult("");
-      setDisplayValue("");
-    } else {
-     
-      setDisplayValue(displayValue + name);
-    }
+    });
+  }, []);
+
+  const addToCart = (item) => {
+    setCart([...cart, item]);
+    alert("successfully added to cart");
+    console.log(item);
   };
-    return(
-      <div style={{marginLeft:"50"}}>
-        <div className="button">
-        <div className="button1">
-        <div className="output">{displayValue}</div>
-            <button name="C" onClick={() => handleClick("C")} style={{  color: "red", backgroundColor: "white",borderColor: "black" }}>C</button>
-            <button name="()" onClick={() => handleClick("()")} style={{  color: "lightgreen", backgroundColor: "white",borderColor: "black" }}>()</button>
-            <button name="%" onClick={() => handleClick("%")} style={{  color: "lightgreen", backgroundColor: "white",borderColor: "black" }}>%</button>
-            <button name="÷" onClick={() => handleClick("÷")} style={{  color: "lightgreen", backgroundColor: "white",borderColor: "black" }}>÷</button>
-            <button name="7" onClick={() => handleClick("7")}>7</button>
-            <button name="8" onClick={() => handleClick("8")}>8</button>
-            <button name="9" onClick={() => handleClick("9")}>9</button>
-            <button name="*" onClick={() => handleClick("*")} style={{  color: "lightgreen", backgroundColor: "white",borderColor: "black" }}>*</button>
-            <button name="4" onClick={() => handleClick("4")}>4</button>
-            <button name="5" onClick={() => handleClick("5")}>5</button>
-            <button name="6" onClick={() => handleClick("6")}>6</button>
-            <button name="-" onClick={() => handleClick("-")} style={{  color: "lightgreen", backgroundColor: "white",borderColor: "black" }}>-</button>
-            <button name="1" onClick={() => handleClick("1")}>1</button>
-            <button name="2" onClick={() => handleClick("2")}>2</button>
-            <button name="3" onClick={() => handleClick("3")}>3</button>
-            <button name="+" onClick={() => handleClick("+")} style={{  color: "lightgreen", backgroundColor: "white",borderColor: "black" }}>+</button>
-            <button name="+/-" onClick={() => handleClick("+/-")} >+/-</button>
-            <button name="0" onClick={() => handleClick("0")}>0</button>
-            <button name="." onClick={() => handleClick(".")}>.</button>
-            <button name="=" onClick={() => handleClick("=")} style={{  color: "black", backgroundColor: "green",borderColor: "black" }}>=</button>
-       
-  </div>
- 
-  </div>
-  </div>
-  
+
+  return (
+    <div>
+      <BrowserRouter>
+        <Routes>
+          <Route exact path="/" element={<About />} />
+          <Route path="/Log" element={<Log />} />
+          <Route path="/User" element={<User />} />
+          <Route path="/dashboard" element={<Dashboard addToCart={addToCart} />} />
+          <Route path="/Girls dresses" element={<Pic1 addToCart={addToCart} />} />
+          <Route path="/Baby dresses" element={<Pic2 addToCart={addToCart} />} />
+          {/* <Route path="/Mens Wear" element={<Pic3 addToCart={addToCart} />} />
+          <Route path="/Watches for girls" element={<Pic4 addToCart={addToCart} />} /> */}
+          <Route path="/cart" element={<Cart cart={cart} setCart={setCart} />} />
+          <Route path="/cartItem" element={<CartItem />} />
+        </Routes>
+      </BrowserRouter>
+    </div>
   );
 }
 
